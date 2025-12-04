@@ -1,73 +1,190 @@
-/* Resetujemy domyślne style kontenera, żeby wykorzystać całą szerokość */
+:root {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #ffffff;
+  --text-secondary: #b3b3b3;
+  --accent-color: #ff0055;
+  --accent-secondary: #00d4ff;
+  --tag-bg: #2c2c2c;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 #root {
   max-width: 100%;
   margin: 0;
   padding: 0;
-  text-align: left;
 }
 
-/* Główny kontener aplikacji */
-.app-container {
-  max-width: 1200px; /* Ograniczamy szerokość, żeby na dużych monitorach nie było zbyt szeroko */
-  margin: 0 auto;    /* Wyśrodkowanie kontenera na stronie */
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Nagłówek */
-h1 {
+/* --- NAGŁÓWEK --- */
+.app-header {
+  background: linear-gradient(135deg, #1a0b2e 0%, #121212 100%);
+  padding: 30px 20px; /* Nieco mniejszy padding */
   text-align: center;
-  color: #333;
+  border-bottom: 2px solid var(--accent-color);
   margin-bottom: 30px;
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
 }
 
-/* Siatka z filmami (Grid) */
+.app-header h1 {
+  margin: 0;
+  font-size: 2.5rem; /* Mniejszy tytuł */
+  background: -webkit-linear-gradient(0deg, #ff0055, #ffcc00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.app-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+/* --- KONTENER I GRID --- */
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
 .movie-list {
   display: grid;
-  /* Automatyczne dopasowanie kolumn: min 250px szerokości */
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  /* ZMIANA: Zmniejszamy minmax z 260px na 180px */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px; /* Mniejszy odstęp między kafelkami */
 }
 
-/* Karta pojedynczego filmu */
+/* --- KARTA FILMU --- */
 .movie-card {
-  border: 1px solid #e0e0e0;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Lekki cień dla ładniejszego efektu */
-  transition: transform 0.2s; /* Animacja przy najechaniu */
+  background-color: var(--card-bg);
+  border-radius: 12px; /* Mniejsze zaokrąglenie */
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #333;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Żeby treść była ładnie rozłożona */
 }
 
-/* Efekt uniesienia karty po najechaniu myszką */
 .movie-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border-color: var(--accent-secondary);
 }
 
-/* Stylizacja obrazka */
-.movie-card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-  margin-bottom: 15px;
+/* Sekcja zdjęcia */
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 250px; /* ZMIANA: Mniejsza wysokość zdjęcia (było 380px) */
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
-/* Tytuł filmu */
-.movie-card h2 {
-  font-size: 1.2rem;
-  margin: 10px 0;
-  color: #222;
+.movie-card:hover .image-container img {
+  transform: scale(1.05);
 }
 
-/* Teksty opisowe */
-.movie-card p {
-  margin: 5px 0;
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2a2a2a;
   color: #555;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
+}
+
+/* Odznaka oceny */
+.rating-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px; /* Mniejszy padding */
+  border-radius: 15px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 0.75rem; /* Mniejsza czcionka */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+}
+
+.high-rating { background-color: rgba(0, 200, 83, 0.9); }
+.mid-rating  { background-color: rgba(255, 193, 7, 0.9); color: #000; }
+.low-rating  { background-color: rgba(255, 61, 0, 0.9); }
+
+/* Treść karty */
+.card-content {
+  padding: 12px; /* ZMIANA: Mniejszy padding wewnątrz karty (było 20px) */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-card h2 {
+  font-size: 1rem; /* ZMIANA: Mniejszy tytuł (było 1.3rem) */
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  color: var(--text-main);
+  /* Opcjonalnie: ucinanie zbyt długich tytułów po 2 liniach */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movie-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.75rem; /* Mniejszy tekst */
+  color: var(--text-secondary);
+}
+
+.year-badge {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Tagi gatunków */
+.genres-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px; /* Gęściej upakowane tagi */
+  margin-top: auto;
+}
+
+.genre-tag {
+  background-color: var(--tag-bg);
+  color: var(--accent-secondary);
+  font-size: 0.65rem; /* Bardzo mała czcionka dla tagów */
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  white-space: nowrap;
+}
+
+/* Loader */
+.loader {
+  color: white;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2rem;
 }

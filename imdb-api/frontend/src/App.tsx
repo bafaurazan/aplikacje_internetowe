@@ -1,27 +1,27 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-// 1. Definiujemy kształt pojedynczego filmu (na podstawie Twojego PDF, np. strona 2)
 interface Movie {
   movie_id: number;
   title: string;
   genres: string;
-  year: number | null; // W source: 122 widać, że rok może być nullem
+  year: number | null;
   img_url: string;
-  rating_avg: number | string; // Czasem przychodzi jako liczba, czasem string
+  rating_avg: number | string;
   rating_amount: number;
 }
 
-// 2. Definiujemy kształt odpowiedzi z Django REST Framework (paginacja)
 interface MoviesResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Movie[]; // To jest lista filmów, która nas interesuje
+  results: Movie[];
 }
 
+// Obrazek zastępczy (szare tło z napisem), pasujący do ciemnego motywu
+const PLACEHOLDER_IMG = "https://dummyimage.com/600x900/2a2a2a/888888.png&text=NO+IMAGE";
+
 function App() {
-  // Tutaj mówimy Reactowi, że 'movies' to będzie tablica obiektów typu Movie
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -29,46 +29,75 @@ function App() {
     fetch('http://localhost:8000/movies/')
       .then((response) => response.json())
       .then((data: MoviesResponse) => {
-        // Django zwraca dane w polu "results" 
         setMovies(data.results);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Błąd pobierania danych:', error);
+        console.error('Błąd:', error);
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <h1>Ładowanie filmów...</h1>;
+  const getRatingColor = (rating: number) => {
+    if (rating >= 4.0) return 'high-rating';
+    if (rating >= 2.5) return 'mid-rating';
+    return 'low-rating';
+  };
+
+  // Funkcja ratunkowa: uruchamia się, gdy podany link do zdjęcia jest uszkodzony
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = PLACEHOLDER_IMG;
+    e.currentTarget.onerror = null; // Zapobiega pętli nieskończonej, gdyby placeholder też nie działał
+  };
+
+  if (loading) return <div className="loader">Ładowanie bazy filmów...</div>;
 
   return (
     <div className="app-container">
-      <h1>Baza Filmów (Django + React TS)</h1>
+      <header className="app-header">
+        <h1>🎬 MovieZone</h1>
+        <p>Twoja kolekcja filmów Django & React</p>
+      </header>
+
       <div className="movie-list">
-        {movies.map((movie) => (
-          <div key={movie.movie_id} className="movie-card">
-            {/* Obrazek - używamy pola img_url z backendu */}
-            {movie.img_url ? (
-              <img 
-                src={movie.img_url} 
-                alt={movie.title} 
-                style={{ width: "150px", height: "auto" }} 
-              />
-            ) : (
-              <div style={{width: "150px", height: "200px", background: "#ccc"}}>Brak zdjęcia</div>
-            )}
-            
-            <h2>{movie.title}</h2>
-            
-            <p><strong>Rok:</strong> {movie.year || 'Nieznany'}</p>
-            <p><strong>Gatunek:</strong> {movie.genres}</p>
-            
-            <p>
-              <strong>Ocena:</strong> {movie.rating_avg} 
-              <span style={{ fontSize: '0.8em', color: '#666' }}> ({movie.rating_amount} głosów)</span>
-            </p>
-          </div>
-        ))}
+        {movies.map((movie) => {
+          const ratingNum = typeof movie.rating_avg === 'string' 
+            ? parseFloat(movie.rating_avg) 
+            : movie.rating_avg;
+
+          const genreList = movie.genres ? movie.genres.split('|') : [];
+
+          return (
+            <div key={movie.movie_id} className="movie-card">
+              <div className="image-container">
+                <img 
+                  // Jeśli img_url jest nullem, od razu użyj placeholdera
+                  src={movie.img_url || PLACEHOLDER_IMG} 
+                  alt={movie.title}
+                  // Jeśli link istnieje, ale nie działa (404), ta funkcja podmieni go na placeholder
+                  onError={handleImageError}
+                />
+                <div className={`rating-badge ${getRatingColor(ratingNum as number)}`}>
+                  ★ {Number(ratingNum).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="card-content">
+                <h2>{movie.title}</h2>
+                <div className="movie-meta">
+                  <span className="year-badge">{movie.year || '???'}</span>
+                  <span className="votes">{movie.rating_amount} gł.</span>
+                </div>
+                
+                <div className="genres-container">
+                  {genreList.slice(0, 3).map((g, index) => (
+                    <span key={index} className="genre-tag">{g.trim()}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
