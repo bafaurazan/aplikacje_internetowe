@@ -38,3 +38,8 @@ source .venv/bin/activate
 cd ~/aplikacje_internetowe/imdb-api/frontend
 npm run dev
 ```
+
+# test
+efekty będą pod adresem reacta, który zadaje zapytania do bazy i je wyświetla
+
+`http://localhost:5173/`
