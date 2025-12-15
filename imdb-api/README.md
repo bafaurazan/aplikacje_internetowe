@@ -19,14 +19,6 @@ npm install
 
 # uruchomienie
 ```bash
-#
-#
-# venv
-cd ~/aplikacje_internetowe/imdb-api
-source .venv/bin/activate
-#
-#
-#
 #backend
 cd ~/aplikacje_internetowe/imdb-api
 source .venv/bin/activate

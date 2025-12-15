@@ -14,10 +14,13 @@ body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Upewniamy się, że body nie ma dziwnych marginesów */
+  width: 100%;
+  overflow-x: hidden;
 }
 
 #root {
-  max-width: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -25,16 +28,16 @@ body {
 /* --- NAGŁÓWEK --- */
 .app-header {
   background: linear-gradient(135deg, #1a0b2e 0%, #121212 100%);
-  padding: 30px 20px;
+  padding: 40px 20px;
   text-align: center;
   border-bottom: 2px solid var(--accent-color);
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 2.5rem;
+  font-size: 3rem;
   background: -webkit-linear-gradient(0deg, #ff0055, #ffcc00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -44,27 +47,59 @@ body {
 
 .app-header p {
   color: var(--text-secondary);
-  font-size: 1rem;
-  margin-top: 5px;
+  font-size: 1.1rem;
+  margin-top: 10px;
 }
 
 /* --- KONTENER GŁÓWNY --- */
 .app-container {
+  /* To centruje całą treść strony */
+  width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px 40px;
+  margin: 0 auto; 
+  padding: 0 20px 60px;
+  box-sizing: border-box;
 }
 
-/* --- GRID FILMÓW (Ten co już masz i działa dobrze) --- */
+/* --- PRZYCISK POWROTU (TERAZ NA ŚRODKU) --- */
+.back-button {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 30px;
+  margin: 0 auto 30px auto; /* auto po bokach centruje przycisk */
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content; /* Przycisk zajmuje tylko tyle miejsca ile potrzebuje */
+}
+
+.back-button:hover {
+  border-color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  transform: scale(1.05);
+}
+
+/* --- LISTA FILMÓW (FLEXBOX DLA CENTROWANIA) --- */
 .movie-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
-  animation: fadeIn 0.5s ease-out; /* Dodane wejście */
+  display: flex;            /* Używamy Flex zamiast Grid */
+  flex-wrap: wrap;          /* Pozwalamy elementom spadać do nowej linii */
+  justify-content: center;  /* TO KLUCZ: Centruje elementy w poziomie */
+  gap: 30px;                /* Odstępy między kartami */
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* --- KARTA FILMU --- */
 .movie-card {
+  /* Stała szerokość jest konieczna przy Flex, żeby karty były równe */
+  width: 260px; 
   background-color: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
@@ -75,15 +110,15 @@ body {
 }
 
 .movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
   border-color: var(--accent-secondary);
 }
 
 .image-container {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 360px; /* Wysokie, kinowe proporcje plakatu */
   overflow: hidden;
 }
 
@@ -113,31 +148,34 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 4px 8px;
-  border-radius: 15px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-weight: bold;
   color: #fff;
-  font-size: 0.75rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  font-size: 0.8rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
-.high-rating { background-color: rgba(0, 200, 83, 0.9); }
-.mid-rating  { background-color: rgba(255, 193, 7, 0.9); color: #000; }
-.low-rating  { background-color: rgba(255, 61, 0, 0.9); }
+.high-rating { background-color: rgba(0, 200, 83, 0.95); }
+.mid-rating  { background-color: rgba(255, 193, 7, 0.95); color: #000; }
+.low-rating  { background-color: rgba(255, 61, 0, 0.95); }
 
 .card-content {
-  padding: 12px;
+  padding: 16px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
 .movie-card h2 {
-  font-size: 1rem;
-  margin: 0 0 8px 0;
-  line-height: 1.3;
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
   color: var(--text-main);
+  text-align: center; /* Wyśrodkowany tytuł */
+  font-weight: 700;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -148,14 +186,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  font-size: 0.75rem;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
   color: var(--text-secondary);
+  padding: 0 5px;
 }
 
 .year-badge {
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 4px;
   font-weight: 600;
 }
@@ -163,29 +202,32 @@ body {
 .genres-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
   margin-top: auto;
+  justify-content: center; /* Wyśrodkowane tagi */
 }
 
 .genre-tag {
   background-color: var(--tag-bg);
   color: var(--accent-secondary);
-  font-size: 0.65rem;
-  padding: 3px 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 212, 255, 0.2);
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.15);
   white-space: nowrap;
 }
 
 .loader {
   color: white;
   text-align: center;
-  margin-top: 50px;
-  font-size: 1.2rem;
+  margin-top: 80px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 1px;
 }
 
 /* ========================================= */
-/* --- NOWE STYLE DLA LOBBY (MENU) --- */
+/* --- STYLE DLA LOBBY (MENU) --- */
 /* ========================================= */
 
 .lobby-container {
@@ -194,47 +236,51 @@ body {
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  animation: fadeIn 0.6s ease-out; /* Animacja wejścia */
+  width: 100%;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .lobby-container h2 {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: var(--text-secondary);
-  margin-bottom: 40px;
+  margin-bottom: 50px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   opacity: 0.8;
+  text-align: center;
 }
 
 .lobby-grid {
-  display: grid;
-  /* Kafelki dopasowują się do szerokości */
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-  gap: 25px;
+  display: flex;            /* Flexbox dla menu */
+  flex-wrap: wrap;
+  justify-content: center;  /* Centrowanie przycisków menu */
+  gap: 30px;
   width: 100%;
-  max-width: 1000px; /* Nie szersze niż 1000px */
+  max-width: 1100px;
 }
 
 .lobby-button {
   background: var(--card-bg);
   color: var(--text-main);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 40px 20px; /* Duże przyciski */
+  padding: 40px 30px;
   border-radius: 16px;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.3rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1 1 200px; /* Responsywność przycisków */
+  min-width: 200px;
+  max-width: 300px;
 }
 
-/* Efekt najechania: uniesienie + neonowa poświata (Niebieska) */
 .lobby-button:hover {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--accent-secondary);
@@ -244,49 +290,191 @@ body {
   z-index: 1;
 }
 
-/* Aktywny stan kliknięcia */
 .lobby-button:active {
   transform: scale(0.98);
 }
 
-/* --- WYRÓŻNIENIE PRZYCISKU 'MOVIES' --- */
-/* Movies to 4. element tablicy w kodzie React, więc nth-child(4) */
 .lobby-button:nth-child(4) { 
-  border-color: rgba(255, 0, 85, 0.3); /* Lekko różowa ramka domyślnie */
+  border-color: rgba(255, 0, 85, 0.3);
 }
 
 .lobby-button:nth-child(4):hover {
   border-color: var(--accent-color);
-  box-shadow: 0 0 30px rgba(255, 0, 85, 0.3); /* Różowa poświata */
+  box-shadow: 0 0 30px rgba(255, 0, 85, 0.3);
   color: var(--accent-color);
 }
 
-/* --- PRZYCISK POWROTU --- */
-.back-button {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 24px;
-  margin-bottom: 30px;
-  border-radius: 50px; /* Zaokrąglona pigułka */
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-button:hover {
-  border-color: var(--text-main);
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-main);
-  transform: translateX(-5px); /* Lekki ruch w lewo */
-}
-
-/* Definicja animacji wejścia */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================= */
+/* --- STYLE MODALA (SZCZEGÓŁY) --- */
+/* ========================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  width: 100%;
+  max-width: 900px;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+  border: 1px solid #333;
+  animation: fadeIn 0.3s ease-out;
+  color: var(--text-main);
+  /* Centrowanie treści w oknie, jeśli jest jej mało */
+  display: flex;
+  flex-direction: column;
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 2.5rem;
+  cursor: pointer;
+  line-height: 0.8;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.close-modal-btn:hover {
+  color: var(--accent-color);
+}
+
+.modal-body {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-direction: row-reverse; /* Zdjęcie po prawej */
+  justify-content: center; /* Centrowanie wewnątrz okna */
+}
+
+.modal-image {
+  flex-shrink: 0;
+  width: 300px;
+}
+
+.modal-image img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.modal-info {
+  flex: 1;
+  text-align: left; /* Tekst czytelny od lewej */
+  max-width: 500px;
+}
+
+.modal-info h2 {
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--text-main);
+  background: linear-gradient(90deg, #fff, #bbb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+
+.modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.modal-meta .year-badge {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  background-color: #333;
+  border: 1px solid #555;
+}
+
+.modal-meta .rating-badge {
+  position: static;
+  box-shadow: none;
+  font-size: 1rem;
+  padding: 6px 14px;
+}
+
+.modal-genres h3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.modal-genres .genres-container {
+  justify-content: flex-start; /* Tagi wyrównane do tekstu */
+}
+
+.modal-description-placeholder {
+  margin-top: 30px;
+  line-height: 1.8;
+  color: #ddd;
+  background: rgba(255,255,255,0.03);
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 4px solid var(--accent-secondary);
+  font-size: 1rem;
+}
+
+/* Responsywność Modala (telefony) */
+@media (max-width: 800px) {
+  .modal-body {
+    flex-direction: column; /* Na telefonach zdjęcie na górę */
+    align-items: center;
+    gap: 30px;
+  }
+  
+  .modal-image {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .modal-info {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .modal-meta {
+    justify-content: center;
+  }
+  
+  .modal-genres .genres-container {
+    justify-content: center;
+  }
+  
+  .modal-description-placeholder {
+    text-align: left;
+  }
 }

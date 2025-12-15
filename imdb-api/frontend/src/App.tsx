@@ -22,10 +22,66 @@ interface MoviesResponse {
 // Obrazek zastępczy
 const PLACEHOLDER_IMG = "https://dummyimage.com/600x900/2a2a2a/888888.png&text=NO+IMAGE";
 
-// --- KOMPONENT: WIDOK FILMÓW (Twój stary kod + przycisk powrotu) ---
+// --- NOWY KOMPONENT: MODAL ZE SZCZEGÓŁAMI ---
+function MovieDetailsModal({ movie, onClose }: { movie: Movie; onClose: () => void }) {
+  if (!movie) return null;
+
+  const ratingNum = typeof movie.rating_avg === 'string' 
+    ? parseFloat(movie.rating_avg) 
+    : movie.rating_avg;
+    
+  const genreList = movie.genres ? movie.genres.split('|') : [];
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-modal-btn" onClick={onClose}>&times;</button>
+        
+        <div className="modal-body">
+          <div className="modal-image">
+            <img 
+              src={movie.img_url || PLACEHOLDER_IMG} 
+              alt={movie.title} 
+            />
+          </div>
+          
+          <div className="modal-info">
+            <h2>{movie.title}</h2>
+            <div className="modal-meta">
+              <span className="year-badge large">{movie.year || '???'}</span>
+              <span className="rating-badge high-rating">
+                ★ {Number(ratingNum).toFixed(1)} ({movie.rating_amount} gł.)
+              </span>
+            </div>
+            
+            <div className="modal-genres">
+              <h3>Gatunki:</h3>
+              <div className="genres-container">
+                {genreList.map((g, index) => (
+                  <span key={index} className="genre-tag">{g.trim()}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Tutaj możesz dodać więcej pól, np. opis, jeśli masz go w API */}
+            <p className="modal-description-placeholder">
+              Tutaj mógłby znaleźć się długi opis filmu, reżyser, obsada itp. 
+              (Wymaga dodania tych pól do backendu Django).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- KOMPONENT: WIDOK FILMÓW ---
 function MoviesView({ onBack }: { onBack: () => void }) {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  
+  // Stan dla wybranego filmu (jeśli null = modal zamknięty)
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     fetch('http://localhost:8000/movies/')
@@ -55,7 +111,14 @@ function MoviesView({ onBack }: { onBack: () => void }) {
 
   return (
     <div>
-      {/* Przycisk powrotu do Lobby */}
+      {/* Modal wyświetla się tylko gdy selectedMovie istnieje */}
+      {selectedMovie && (
+        <MovieDetailsModal 
+          movie={selectedMovie} 
+          onClose={() => setSelectedMovie(null)} 
+        />
+      )}
+
       <button className="back-button" onClick={onBack}>
         ← Wróć do Menu
       </button>
@@ -71,10 +134,14 @@ function MoviesView({ onBack }: { onBack: () => void }) {
           return (
             <div key={movie.movie_id} className="movie-card">
               <div className="image-container">
+                {/* Dodałem onClick i zmianę kursora */}
                 <img 
                   src={movie.img_url || PLACEHOLDER_IMG} 
                   alt={movie.title}
                   onError={handleImageError}
+                  onClick={() => setSelectedMovie(movie)}
+                  style={{ cursor: 'pointer' }}
+                  title="Kliknij, aby zobaczyć szczegóły"
                 />
                 <div className={`rating-badge ${getRatingColor(ratingNum as number)}`}>
                   ★ {Number(ratingNum).toFixed(1)}
@@ -103,7 +170,6 @@ function MoviesView({ onBack }: { onBack: () => void }) {
 
 // --- KOMPONENT: LOBBY (MENU) ---
 function LobbyView({ onSelect }: { onSelect: (category: string) => void }) {
-  // Lista przycisków zgodna z Twoim zdjęciem Api Root
   const categories = ['links', 'ratings', 'seasons', 'movies', 'tags'];
 
   return (
@@ -126,7 +192,6 @@ function LobbyView({ onSelect }: { onSelect: (category: string) => void }) {
 
 // --- GŁÓWNY KOMPONENT APP ---
 function App() {
-  // Stan decydujący co wyświetlamy: 'home' lub 'movies'
   const [currentView, setCurrentView] = useState<'home' | 'movies'>('home');
 
   const handleNavigate = (category: string) => {
@@ -144,7 +209,6 @@ function App() {
         <p>Twoja kolekcja filmów Django & React</p>
       </header>
 
-      {/* Warunkowe wyświetlanie */}
       {currentView === 'home' ? (
         <LobbyView onSelect={handleNavigate} />
       ) : (
